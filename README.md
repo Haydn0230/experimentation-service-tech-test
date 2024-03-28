@@ -6,70 +6,145 @@ different versions of the website to them to see which one they prefer. We need 
 we can accurately monitor the success of different version of the site. The format of this test is split into 3 different tasks, 
 with each building on the previous.
 
+The exercise is only an hour and there's no right and wrong answer. We're interested in how you approach the problem and to see how you work.
+
 ### Tech
 There are no specific requirements around tech, so please choose whatever language will best showcase your abilities! We're more interested 
-in understanding your ability to problem solve and explain why you've tackled the problem in the way you have. We have provided a 
-dockerfile to make things easier but feel free to ignore this if you'd prefer to use something else. 
+in understanding your ability to problem solve and explain why you've tackled the problem in the way you have.
 
 
-## Task 1
-Situation: Our front ends want to be able to split customers between experiments, but they want us to do the assigning of the experiments for each user.
-Lets write a service that takes an id and returns an experiment. To do this we are going to need an app that allows us to:
- - create an experiment
- - assign an experiment
- - delete an experiment 
+## Task 1 - Create a management endpoint for experiments
+Situation: Our front ends want to be able to split customers between experiments this involves us managing and assigning the experiments for each user.
+Lets write a service that allows us to manage experiments. To do this we are going to need an app that allows us to meet the following requirements:
 
-<details>
-<summary>Example Request</summary>
-
-```
-  localhost:8080/experiment/{customer-id}
-```
-</details>
+Requirements: 
+- Be able to create an experiment
+- Be able to retrieve the full list of experiments
 
 <details>
-<summary>Example Response</summary>
+<summary>Create experiment example</summary>
 
+Verb: **POST**
+
+Endpoint:
+```
+localhost:8080/experiment
+```
+
+Request:
 ```json
 {
-    "experiment": [
-        {
-            "id": "2bd1e4d7-09fd-4b24-9359-52f42b46e090",
-            "created": "2024-03-04T10:44:22.531+00:00",
-            "name": "colour",
-            "type": "yellow"
-        }
-    ],
-    "userId": "d7cf75e1-90dd-4bda-ad63-06fcdcce7194"
+    "name": "colour",
+    "type": "red"
 }
+```
 
+Response
+```json
+{
+  "experimentId": "4fabbf99-20fa-4957-8c3c-8d46eeadea87"
+}
 ```
 </details>
 
----
-## Task 2 
-Situation: The front ends really like our service, but they want the ability to track which customer is on which experiment over time, so lets store the experiment that the customer has been assigned to for future use
 <details>
-<summary>Hint</summary>
-We can store the values in a map to satisfy the requirement of persisting experiments between requests
+<summary>List experiment example</summary>
+
+Verb: **GET**
+
+Endpoint:
+```
+localhost:8080/experiment
+```
+
+Response
+```json
+[
+    {
+        "id": "8fda77e3-f909-41e3-a6fc-63c25334de09",
+        "date": "2024-02-27T16:16:43.801+00:00",
+        "name": "colour",
+        "type": "brown"
+    },
+    {
+        "id": "f298c447-3917-446d-acdd-c8f7a123c27a",
+        "date": "2024-02-27T16:16:43.801+00:00",
+        "name": "colour",
+        "type": "yellow"
+    },
+    {
+        "id": "4fabbf99-20fa-4957-8c3c-8d46eeadea87",
+        "date": "2024-02-27T16:16:44.502+00:00",
+        "name": "colour",
+        "type": "red"
+    }
+]
+```
 </details>
 
----
-## Task 3
-Situation: The website has become so popular because of all our experiments! 
-But this has meant that the single app we have deployed is struggling to cope, when it goes down we don't have anything to tell us which customer is on which experiment, disaster!
-So we need to increase the fault tolerance of the system. How can we do this?
+
+## Task 2 - Assign an experiment to a user
+Situation: Now that we have a service that allows us to create and list experiments lets create an endpoint to assign a customer to each experiment. To do this the front ends will
+send us an id and we can return the customers id with the experiment they are assigned to.  
+
+Requirements:
+- When given a customer id we assign them to an experiment, store that link and return both the experiment and customer id 
+- A customer can be assigned to only 1 experiment at a time. 
+- On repeated calls with the same customer id we should retrieve the same experiment
+
 
 <details>
-<summary>Hint</summary>
-We need to horizontally scale, so we need to remove the state out of the app and into a caching service like redis (look at the dockerfile) 
-To spin up Redis do the following:
+<summary>Assign a customer example</summary>
 
- - Run the following at the root of the repository```docker-compose up -d```
- - Check its running with ```docker ps```
+Verb: **GET**
 
-We can interact with redis via the redis-commander image, if we go to ```localhost:8081``` we can view our data via a GUI. 
+Endpoint:
+```
+localhost:8080/experiment/user/{id}
+```
+
+Response
+```json
+{
+    "date": "2024-02-27T16:21:28.533+00:00",
+    "output": [
+        {
+            "id": "32a82a81-5dba-434b-8ce2-7bda3343702d",
+            "date": "2024-02-27T16:16:43.801+00:00",
+            "name": "colour",
+            "type": "brown"
+        }
+    ],
+    "userId": "123"
+}
+```
+</details>
+
+## Task 3 - Delete an experiment
+Situation: Now that we have the ability to create experiments and assign those to users we now want the ability to stop experiments. To do this we will need to the ability to delete an experiment. 
+
+Requirements: 
+- Be able to delete an experiment
+- Remove the deleted experiment from users that currently have that experiment assigned
+
+<details>
+<summary>Delete an experiment example</summary>
+
+Verb: **DELETE**
+
+Endpoint:
+```
+localhost:8080/experiment/{id}
+```
+
+Response
+```json
+{
+    "deleted": true,
+    "removedFrom": 1,
+    "id": "8fda77e3-f909-41e3-a6fc-63c25334de09"
+}
+```
 
 </details>
 
----
