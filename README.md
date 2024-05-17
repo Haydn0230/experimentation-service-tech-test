@@ -1,12 +1,12 @@
 # Experimentation Service Tech Test
-Welcome to the experimentation service tech test! 
+Welcome to the experimentation service pair programming exercise! 
 
 We've been asked to develop an app thats going to allow us to split customers into equal shares and then serve 
 different versions of the website to them to see which one they prefer. We need to keep track of who's seen what so 
 we can accurately monitor the success of different version of the site. The format of this test is split into 3 different tasks, 
-with each building on the previous.
+with each building on the previous. It's a pair programming exercise where you'll be in the driving seat and will be accompanied by an engineer.
 
-The exercise is only an hour and there's no right and wrong answer. We're interested in how you approach the problem and to see how you work.
+The exercise is only an hour and there's no right and wrong answer. We're interested in how you approach the problem and to see how you work. It's not an exam, so use whatever resources you might normally use to help you solve the problem. Everyone uses Google + Stack Overflow right? And the engineer accompanying you will be there to talk through the problem and help you out if you need.
 
 ### Tech
 There are no specific requirements around tech, so please choose whatever language will best showcase your abilities! We're more interested 
